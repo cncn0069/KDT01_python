@@ -1,0 +1,133 @@
+
+🧠 머신러닝·딥러닝을 위한 파이썬 클래스 실습 과제 (초·중·고급)
+🟩 초급: 클래스 문법 및 객체 생성 기본 훈련
+✅ 과제 1. Student 클래스 만들기
+속성: 이름, 나이, 점수 (리스트)
+
+메서드: 평균 점수 계산, 성적 출력
+
+
+class Student:
+    def __init__(self, name, age, scores):
+        self.name = name
+        self.age = age
+        self.scores = scores
+
+    def average(self):
+        return sum(self.scores) / len(self.scores)
+
+    def show(self):
+        print(f"{self.name}의 평균 점수는 {self.average():.1f}점입니다.")
+추가 연습
+__str__() 메서드 오버라이딩
+
+리스트에 여러 명의 Student 객체를 저장하고 반복 출력
+
+
+🟩 중급: 데이터 관리, 조건 분기, 리스트 활용
+✅ 과제 2. Dataset 클래스 만들기
+속성: 데이터 리스트 ((입력값, 레이블) 튜플)
+
+메서드:
+
+add(x, y) → 샘플 추가
+
+summary() → 전체 개수, 클래스별 분포 출력
+
+split(ratio) → train/test 분할 (shuffle 포함)
+
+
+class Dataset:
+    def __init__(self):
+        self.data = []
+
+    def add(self, x, y):
+        self.data.append((x, y))
+
+    def summary(self):
+        total = len(self.data)
+        label_count = {}
+        for _, y in self.data:
+            label_count[y] = label_count.get(y, 0) + 1
+        print(f"총 {total}개 샘플")
+        for label, count in label_count.items():
+            print(f" - {label}: {count}개")
+
+    def split(self, ratio=0.8):
+        import random
+        random.shuffle(self.data)
+        n = int(len(self.data) * ratio)
+        return self.data[:n], self.data[n:]
+
+
+🟩 고급: 추상화, 상속, 오버라이딩
+✅ 과제 3. 모델 클래스 계층 만들기
+목표: 추상 클래스 + 서브 클래스 구현 훈련
+
+
+# BaseModel: 추상 클래스
+class BaseModel:
+    def train(self, X, y):
+        raise NotImplementedError
+
+    def predict(self, X):
+        raise NotImplementedError
+
+🔍 raise NotImplementedError의 의미
+NotImplementedError는 내장 예외 클래스
+
+raise NotImplementedError는 "아직 구현되지 않은 메서드"임을 명시
+
+이 메서드를 호출하면 의도적으로 예외를 발생시킴
+
+
+
+✅ 과제 4. ConstantModel 클래스 만들기
+항상 특정 레이블만 예측하는 더미 모델
+
+속성: 예측할 고정 값 c
+
+
+class ConstantModel(BaseModel):
+    def __init__(self, constant):
+        self.constant = constant
+
+    def train(self, X, y):
+        pass  # 학습 없음
+
+    def predict(self, X):
+        return [self.constant] * len(X)
+
+
+추가 고급 과제
+AccuracyEvaluator 클래스를 만들어 evaluate(model, X_test, y_test) 메서드 구현
+
+LogisticRegressionModel 또는 LinearModel 등의 클래스 설계 (추상화 + 계산 메서드 분리)
+
+
+📦 보너스 과제: 전처리 도구 클래스
+✅ Preprocessor 클래스 만들기
+메서드:
+
+normalize(data) → 0~1 스케일링
+
+standardize(data) → 평균 0, 표준편차 1
+
+
+class Preprocessor:
+    def normalize(self, data):
+        min_val = min(data)
+        max_val = max(data)
+        return [(x - min_val) / (max_val - min_val) for x in data]
+
+    def standardize(self, data):
+        import statistics
+        mean = statistics.mean(data)
+        std = statistics.stdev(data)
+        return [(x - mean) / std for x in data]
+🧩 확장 아이디어
+Pipeline 클래스: 전처리기 + 모델을 순차적으로 호출하도록 설계
+
+MLExperiment 클래스: 데이터 설정, 모델 학습, 평가, 로그 출력까지 자동화
+
+
